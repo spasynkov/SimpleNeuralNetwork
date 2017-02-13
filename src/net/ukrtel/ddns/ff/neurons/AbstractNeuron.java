@@ -30,7 +30,8 @@ public abstract class AbstractNeuron {
     }
 
     /**
-     * Could be used for input neurons
+     * Sets the output value for neuron.
+     * Used by bias neuron and could be used for input neurons
      * @param output the value of input neuron
      */
     public void setOutput(double output) {
