@@ -1,22 +1,26 @@
 package net.ukrtel.ddns.ff;
 
 import javafx.util.Pair;
-import net.ukrtel.ddns.ff.exceptions.SizesOfListsAreNotEqualsException;
-import net.ukrtel.ddns.ff.network.*;
+import net.ukrtel.ddns.ff.activationfunctions.ActivationFunction;
+import net.ukrtel.ddns.ff.activationfunctions.ActivationFunctionFactory;
+import net.ukrtel.ddns.ff.neurons.AbstractNeuron;
+import net.ukrtel.ddns.ff.neurons.InputNeuron;
+import net.ukrtel.ddns.ff.neurons.Neuron;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.ukrtel.ddns.ff.network.ErrorCalculations.meanSquaredErrorCalculation;
+import static net.ukrtel.ddns.ff.ErrorCalculations.meanSquaredErrorCalculation;
+import static net.ukrtel.ddns.ff.activationfunctions.ActivationFunctionType.SIGMOID;
 
 /**
  * Simple example of neuron network
- * The idea was took from here: https://habrahabr.ru/post/312450/
+ * The idea was taken from here: https://habrahabr.ru/post/312450/
  */
-public class SimpleNeuralNetworkWithHardcodedNeurons {
-    public static void main(String[] args) throws SizesOfListsAreNotEqualsException {
+public class SimpleNeuralNetworkExample {
+    public static void main(String[] args) {
         // creating a factory of activation functions and setting it to work with sigmoid function
-        ActivationFunctionFactory factory = new ActivationFunctionFactory((byte) 0);
+        ActivationFunction activationFunction = new ActivationFunctionFactory(SIGMOID).getActivationFunction();
 
         // creating input neurons
         List<AbstractNeuron> inputNeurons = new ArrayList<>(2);
@@ -30,14 +34,14 @@ public class SimpleNeuralNetworkWithHardcodedNeurons {
         weights1.add(0.45);     // weight between first input neuron and this one
         weights1.add(-0.12);    // weight between second input neuron and this one
         // creating neuron now
-        Neuron neuron1 = new Neuron(factory, inputNeurons, weights1);
+        Neuron neuron1 = new Neuron(inputNeurons, weights1, activationFunction);
 
         // preparing data for second hidden neuron
         List<Double> weights2 = new ArrayList<>(2);
         weights2.add(0.78);     // weight between first input neuron and this one
         weights2.add(0.13);     // weight between second input neuron and this one
         // creating neuron now
-        Neuron neuron2 = new Neuron(factory, inputNeurons, weights2);
+        Neuron neuron2 = new Neuron(inputNeurons, weights2, activationFunction);
 
         // now we have 2 separate neurons. let's join them into the layer to be passed into the output neuron
 
@@ -50,7 +54,7 @@ public class SimpleNeuralNetworkWithHardcodedNeurons {
         List<Double> weights3 = new ArrayList<>(2);
         weights3.add(1.5);      // weight between first hidden neuron and output one
         weights3.add(-2.3);     // weight between second hidden neuron and output one
-        Neuron outputNeuron = new Neuron(factory, firstNeuronsLayer, weights3);
+        Neuron outputNeuron = new Neuron(firstNeuronsLayer, weights3, activationFunction);
 
         double result = outputNeuron.getOutput();
 

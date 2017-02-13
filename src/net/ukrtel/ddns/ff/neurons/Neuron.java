@@ -1,24 +1,38 @@
-package net.ukrtel.ddns.ff.network;
+package net.ukrtel.ddns.ff.neurons;
 
+import net.ukrtel.ddns.ff.activationfunctions.ActivationFunction;
 import net.ukrtel.ddns.ff.exceptions.SizesOfListsAreNotEqualsException;
-import net.ukrtel.ddns.ff.network.activationfunctions.ActivationFunction;
-import net.ukrtel.ddns.ff.network.activationfunctions.ActivationFunctionFactory;
 
 import java.util.List;
 
 public class Neuron extends AbstractNeuron {
 
+    /**
+     * The list of neurons which are previous for this one (it's incoming connections)
+     */
     private List<AbstractNeuron> inputNeurons;
+
+    /**
+     * The list of weights for each incoming connection for this neuron
+     */
     private List<Double> weights;
 
-    public Neuron(ActivationFunction activationFunction, List<AbstractNeuron> inputNeurons, List<Double> weights)
-            throws SizesOfListsAreNotEqualsException {
+    /**
+     * Creates a neuron
+     * @param inputNeurons the list of neurons which are previous for this one (it's incoming connections)
+     * @param weights the list of weights for each incoming connection for this neuron
+     * @param activationFunction to be used for producing output
+     */
+    public Neuron(List<AbstractNeuron> inputNeurons, List<Double> weights, ActivationFunction activationFunction) {
 
-        if (inputNeurons.size() != weights.size()) throw new SizesOfListsAreNotEqualsException();
+        if (inputNeurons == null || weights == null || activationFunction == null)
+            throw new IllegalArgumentException("Argument values should not be null.");
+        if (inputNeurons.size() != weights.size())
+            throw new SizesOfListsAreNotEqualsException("The number of inputNeurons and weights should be equals.");
 
-        this.setActivationFunction(activationFunction);
         this.inputNeurons = inputNeurons;
         this.weights = weights;
+        this.setActivationFunction(activationFunction);
 
         double value = calculateNeuronValue(inputNeurons, weights);
 
@@ -27,6 +41,12 @@ public class Neuron extends AbstractNeuron {
         System.out.println();
     }
 
+    /**
+     * Calculates the current neuron value.
+     * @param inputNeurons the list of neurons which are previous for this one (it's incoming connections)
+     * @param weights the list of weights for each incoming connection for this neuron
+     * @return the sum of each incoming neuron output value * it's (connection) weight
+     */
     private double calculateNeuronValue(List<AbstractNeuron> inputNeurons, List<Double> weights) {
         double result = 0;
 

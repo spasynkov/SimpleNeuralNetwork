@@ -1,71 +1,53 @@
-package net.ukrtel.ddns.ff.network.activationfunctions;
+package net.ukrtel.ddns.ff.activationfunctions;
 
+/**
+ * The factory that produces the instance of ActivationFunction interface.
+ *
+ * <p>It could be: <br />
+ * - sigmoid activation function f(x) = 1 / (1 + e ^ -x),<br />
+ * - hyperboloid tangent f(x) = (e ^ 2x  - 1) / (e ^ 2x  + 1)<br />
+ * - or just linear activation function f(x) = x</p>
+ *
+ * <p>The concrete realisation depends of it's (ActivationFunctionFactory) constructor's parameter.</p>
+ */
 public class ActivationFunctionFactory {
     /**
      * Identifier that will specify what kind of function to use
-     * true for sigmoid [0, 1]
-     * false for hyperboloic tangent [-1, 1]
-     * null for linear
      */
-    private final Boolean identifier;
+    private final ActivationFunctionType type;
 
-    public ActivationFunctionFactory(byte lowestRate) {
-        if (lowestRate == 0) identifier = true;         // if lowest rate is set to 0 then we need sigmoid function
-        else if (lowestRate == -1) identifier = false;  // if it's set to -1 then hyperbolic tangents is what we need
-        else identifier = null;                         // otherwise we will use linear function
+    /**
+     * Constructs the factory
+     * @param functionType defines wheat kind of activation function to use
+     */
+    public ActivationFunctionFactory(ActivationFunctionType functionType) {
+        this.type = functionType;
     }
 
+    /**
+     * Passes back the instance of ActivationFunction.
+     * @return the concrete instance of ActivationFunction interface
+     */
     public ActivationFunction getActivationFunction() {
-        if (identifier == null) return x -> {
-            System.out.printf("hOutput = linear(%.2f) = %.2f%n", x, x);
-            return x;
-        };
-
-        if (identifier) return x -> {
-            double result = 1.0 / (1 + Math.pow(Math.E, x * -1));
-            System.out.printf("hOutput = sigmoid(%.2f) = %.2f%n", x, result);
-            return result;
-        };
-        else return x -> {
-            double e2x = Math.pow(Math.E, 2 * x);
-            double result = (e2x - 1) / (e2x + 1);
-            System.out.printf("hOutput = hyperbolicTangents(%.2f) = %.2f%n", x, result);
-            return result;
-        };
-    }
-
-    /**
-     * Simple linear activation function.
-     * f(x) = x
-     * Used only when you need to get value without transformation, or just for testing.
-     * @param x the value for normalization
-     * @return the same value x casted to float
-     */
-    private float linearActivationFunction(double x) {
-        return (float) x;
-    }
-
-    /**
-     * Sigmoid activation function.
-     * f(x) = 1 / (1 + e ^ -x)
-     * Used when you need to normalize some value x to be into the interval [0, 1]
-     * @param x the value for normalization
-     * @return normalized x value in interval [0, 1] casted to float
-     */
-    private float sigmoidActivationFunction(double x) {
-        float result = (float) (1.0 / (1 + Math.pow(Math.E, x * -1)));
-        return result;
-    }
-
-    /**
-     * Hyperbolic tangents activation function.
-     * f(x) = (e ^ 2x  - 1) / (e ^ 2x  + 1)
-     * Used when you need to normalize some value x to be into the interval [-1, 1]
-     * @param x the value for normalization
-     * @return normalized x value in interval [-1, 1] casted to float
-     */
-    private float hyperbolicTangentsActivationFunction(double x) {
-        double e2x = Math.pow(Math.E, 2 * x);
-        return (float) ((e2x - 1) / (e2x + 1));
+        switch (type) {
+            case SIGMOID:
+            return x -> {
+                double result = 1.0 / (1 + Math.pow(Math.E, x * -1));
+                System.out.printf("hOutput = sigmoid(%.2f) = %.2f%n", x, result);
+                return result;
+            };
+            case HYPERBOLOID_TANGENT:
+            return x -> {
+                double e2x = Math.pow(Math.E, 2 * x);
+                double result = (e2x - 1) / (e2x + 1);
+                System.out.printf("hOutput = hyperbolicTangents(%.2f) = %.2f%n", x, result);
+                return result;
+            };
+            default: case LINEAR:
+                return x -> {
+                    System.out.printf("hOutput = linear(%.2f) = %.2f%n", x, x);
+                    return x;
+                };
+        }
     }
 }

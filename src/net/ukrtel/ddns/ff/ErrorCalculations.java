@@ -1,4 +1,4 @@
-package net.ukrtel.ddns.ff.network;
+package net.ukrtel.ddns.ff;
 
 import javafx.util.Pair;
 
