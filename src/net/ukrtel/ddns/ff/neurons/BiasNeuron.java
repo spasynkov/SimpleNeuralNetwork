@@ -11,4 +11,10 @@ public class BiasNeuron extends AbstractNeuron {
     public BiasNeuron() {
         setOutput(1);
     }
+
+    @Override
+    public BiasNeuron setName(String name) {
+        super.setName(name);
+        return this;
+    }
 }

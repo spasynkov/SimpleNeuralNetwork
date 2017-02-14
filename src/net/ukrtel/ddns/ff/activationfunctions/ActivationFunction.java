@@ -7,8 +7,18 @@ package net.ukrtel.ddns.ff.activationfunctions;
 public interface ActivationFunction {
     /**
      * Normalizes the value x
+     *
      * @param x the value to be normalized
      * @return the double representation of normalized x value by some activation function
      */
-    double calculate(double x);
+    double normalize(double x);
+
+    /**
+     * Differential function.
+     * If "normalize" is f(x) - this one is f'(x)
+     *
+     * @param actualOutputData the output data of some neuron
+     * @return the result of differentiation of the output neuron's data
+     */
+    double differentialFunction(double actualOutputData);
 }

@@ -7,9 +7,16 @@ public class InputNeuron extends AbstractNeuron {
 
     /**
      * Creates input neuron instance with specified value in it
+     *
      * @param value the value to be stored in this neuron
      */
-    public InputNeuron(byte value) {
+    public InputNeuron(double value) {
         this.output = value;
+    }
+
+    @Override
+    public InputNeuron setName(String name) {
+        super.setName(name);
+        return this;
     }
 }

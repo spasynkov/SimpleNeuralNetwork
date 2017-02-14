@@ -3,7 +3,7 @@ package net.ukrtel.ddns.ff;
 import javafx.util.Pair;
 
 public class ErrorCalculations {
-    public static double meanSquaredErrorCalculation(Pair<Double, Double> ... values) {
+    public static double meanSquaredErrorCalculation(Pair<Double, Double>... values) {
         double result = 0;
 
         for (Pair pair : values) {
@@ -16,7 +16,7 @@ public class ErrorCalculations {
         return result / values.length;
     }
 
-    public static float rootMeanSquaredErrorCalculation(Pair<Number, Number> ... values) {
+    public static float rootMeanSquaredErrorCalculation(Pair<Number, Number>... values) {
         float result = 0;
 
         for (Pair pair : values) {
@@ -29,7 +29,7 @@ public class ErrorCalculations {
         return (float) Math.sqrt(result / values.length);
     }
 
-    public static float arctanErrorCalculation(Pair<Number, Number> ... values) {
+    public static float arctanErrorCalculation(Pair<Number, Number>... values) {
         float result = 0;
 
         for (Pair pair : values) {
