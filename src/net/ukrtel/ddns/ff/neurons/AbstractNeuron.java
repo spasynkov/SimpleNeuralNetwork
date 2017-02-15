@@ -15,6 +15,13 @@ public abstract class AbstractNeuron {
 
     private String name;
 
+    public AbstractNeuron() {
+    }
+
+    public AbstractNeuron(String name) {
+        this.name = name;
+    }
+
     /**
      * Sets the realisation of ActivationFunction interface
      *

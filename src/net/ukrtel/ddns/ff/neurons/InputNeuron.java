@@ -5,6 +5,9 @@ package net.ukrtel.ddns.ff.neurons;
  */
 public class InputNeuron extends AbstractNeuron {
 
+    public InputNeuron() {
+    }
+
     /**
      * Creates input neuron instance with specified value in it
      *

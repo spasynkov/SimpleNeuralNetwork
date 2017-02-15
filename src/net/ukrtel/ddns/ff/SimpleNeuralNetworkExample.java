@@ -69,10 +69,11 @@ public class SimpleNeuralNetworkExample {
         System.out.printf("Error: %.2f%%%n", meanSquaredErrorCalculation(new Pair<>((double) 1, result)) * 100);
 
         System.out.println();
+        double delta = outputNeuron.backwardPropagation(0);
         System.out.printf("Backward propagation for %s = %s%n",
-                outputNeuron.getName(), outputNeuron.backwardPropagation());
+                outputNeuron.getName(), delta);
 
         System.out.println();
-        System.out.printf("Backward propagation for %s = %s%n", neuron1.getName(), neuron1.backwardPropagation());
+        System.out.printf("Backward propagation for %s = %s%n", neuron1.getName(), neuron1.backwardPropagation(delta));
     }
 }

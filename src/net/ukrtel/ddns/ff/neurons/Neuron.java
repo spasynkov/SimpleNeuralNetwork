@@ -4,6 +4,7 @@ import net.ukrtel.ddns.ff.activationfunctions.ActivationFunction;
 import net.ukrtel.ddns.ff.exceptions.NoSuitableNeuronFoundException;
 import net.ukrtel.ddns.ff.exceptions.SizesOfListsAreNotEqualsException;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,22 +13,23 @@ public class Neuron extends AbstractNeuron {
     /**
      * The list of neurons which are previous for this one (it's incoming connections)
      */
-    private List<AbstractNeuron> inputNeurons;
+    private final List<AbstractNeuron> inputNeurons;
 
     /**
      * The list of weights for each incoming connection for this neuron
      */
-    private List<Double> weights;
+    private final List<Double> weights;
 
     /**
      * The list of outgoing neurons
      */
-    private List<Neuron> outputNeurons;
+    private final List<Neuron> outputNeurons;
 
-    /**
-     * Some kind of the error rate of our network with a certain weights
-     */
-    private double delta;
+    public Neuron() {
+        inputNeurons = new ArrayList<>();
+        weights = new ArrayList<>();
+        outputNeurons = new ArrayList<>();
+    }
 
     /**
      * Creates a neuron
@@ -64,11 +66,23 @@ public class Neuron extends AbstractNeuron {
         System.out.println();       // just some extra space
     }
 
+    public List<AbstractNeuron> getInputNeurons() {
+        return inputNeurons;
+    }
+
+    public List<Double> getWeights() {
+        return weights;
+    }
+
+    public List<Neuron> getOutputNeurons() {
+        return outputNeurons;
+    }
+
     /**
      * Calculates backward propagation value
      * @return backward propagation value
      */
-    public double backwardPropagation() {
+    public double backwardPropagation(double delta) {
         double result = 0;
         System.out.printf("δ(%s) = ", getName() == null ? "neuron" : getName());
 
@@ -91,19 +105,6 @@ public class Neuron extends AbstractNeuron {
         result *= differentialOfActivationFunction;
         System.out.printf(") = %.2f%n", result);
         return result;
-    }
-
-    /**
-     * Setting delta value and populating all child neurons with it
-     * @param value delta value that represents some kind of the error rate of our network with such weights
-     */
-    void transferDelta(double value) {
-        delta = value;
-        for (AbstractNeuron neuron : inputNeurons) {
-            if (neuron instanceof Neuron) {
-                ((Neuron) neuron).transferDelta(value);
-            }
-        }
     }
 
     /**

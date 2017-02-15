@@ -5,7 +5,9 @@ import net.ukrtel.ddns.ff.activationfunctions.ActivationFunction;
 import java.util.List;
 
 public class OutputNeuron extends Neuron {
-    private final double expectedValue;
+    private double expectedValue;
+
+    public OutputNeuron() {}
 
     /**
      * Creates a neuron
@@ -21,18 +23,21 @@ public class OutputNeuron extends Neuron {
         this.expectedValue = expectedValue;
     }
 
+    public void setExpectedValue(double expectedValue) {
+        this.expectedValue = expectedValue;
+    }
+
     /**
      * Calculates backward propagation value
      * @return backward propagation value
      */
     @Override
-    public double backwardPropagation() {
+    public double backwardPropagation(double delta) {
         System.out.println("Ideal: " + expectedValue);
         System.out.printf("δ(%s) = (%.2f - %.2f) * ", getName() == null ? "output" : getName(), expectedValue, output);
         double differentialOfActivationFunction = activationFunction.differentialFunction(output);
         double result = (expectedValue - output) * differentialOfActivationFunction;
         System.out.printf(" = %.2f%n", result);
-        transferDelta(result);
         return result;
     }
 
