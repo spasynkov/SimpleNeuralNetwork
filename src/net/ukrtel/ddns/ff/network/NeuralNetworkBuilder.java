@@ -4,6 +4,9 @@ import javafx.util.Builder;
 import net.ukrtel.ddns.ff.neurons.InputNeuron;
 import net.ukrtel.ddns.ff.neurons.Neuron;
 import net.ukrtel.ddns.ff.neurons.OutputNeuron;
+import net.ukrtel.ddns.ff.utils.NetworkStrategy;
+import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
+import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculation;
 
 import java.util.List;
 
@@ -24,4 +27,8 @@ public interface NeuralNetworkBuilder extends Builder<NeuralNetwork> {
     NeuralNetworkBuilder addHiddenNeuronsLayer(List<Neuron> neurons);
 
     NeuralNetworkBuilder generateAllConnections();
+
+    NeuralNetworkBuilder setStrategy(NetworkStrategy strategy);
+    NeuralNetworkBuilder setActivationFunction(ActivationFunction activationFunction);
+    NeuralNetworkBuilder setErrorCalculation(ErrorCalculation errorCalculation);
 }

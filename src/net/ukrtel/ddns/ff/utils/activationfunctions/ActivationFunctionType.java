@@ -1,4 +1,4 @@
-package net.ukrtel.ddns.ff.activationfunctions;
+package net.ukrtel.ddns.ff.utils.activationfunctions;
 
 /**
  * Defines the type of the activation function.

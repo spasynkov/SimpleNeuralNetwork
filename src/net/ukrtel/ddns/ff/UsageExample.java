@@ -7,9 +7,13 @@ import net.ukrtel.ddns.ff.network.TrainingSet;
 import net.ukrtel.ddns.ff.neurons.InputNeuron;
 import net.ukrtel.ddns.ff.neurons.Neuron;
 import net.ukrtel.ddns.ff.neurons.OutputNeuron;
+import net.ukrtel.ddns.ff.utils.NetworkStrategyImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunctionType.SIGMOID;
+import static net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculationType.MEAN_SQUARED;
 
 /**
  * Simple example of how to build and use this neural network
@@ -34,6 +38,10 @@ public class UsageExample {
 
     public static void main(String[] args) {
         NeuralNetwork network = new NeuralNetworkImpl().getBuilder()
+                //.setActivationFunction(new ActivationFunctionFactory(LINEAR).getActivationFunction())
+                //.setErrorCalculation(new ErrorCalculationFactory(ARCTAN).getInstance())
+                .setStrategy(new NetworkStrategyImpl(SIGMOID, MEAN_SQUARED))
+
                 //.addInputNeurons(15)
                 //.setInputNeurons(INPUT_NEURONS)   // will override previous input neurons
                 .addInputNeurons()                  // will override previous input neurons

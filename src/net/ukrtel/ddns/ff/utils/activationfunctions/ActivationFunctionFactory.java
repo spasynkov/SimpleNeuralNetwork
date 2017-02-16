@@ -1,4 +1,4 @@
-package net.ukrtel.ddns.ff.activationfunctions;
+package net.ukrtel.ddns.ff.utils.activationfunctions;
 
 import net.ukrtel.ddns.ff.exceptions.DifferentiationIsNotAllowedException;
 

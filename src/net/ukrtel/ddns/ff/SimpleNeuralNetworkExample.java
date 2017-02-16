@@ -1,18 +1,19 @@
 package net.ukrtel.ddns.ff;
 
 import javafx.util.Pair;
-import net.ukrtel.ddns.ff.activationfunctions.ActivationFunction;
-import net.ukrtel.ddns.ff.activationfunctions.ActivationFunctionFactory;
 import net.ukrtel.ddns.ff.neurons.AbstractNeuron;
 import net.ukrtel.ddns.ff.neurons.InputNeuron;
 import net.ukrtel.ddns.ff.neurons.Neuron;
 import net.ukrtel.ddns.ff.neurons.OutputNeuron;
+import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
+import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunctionFactory;
+import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculationFactory;
+import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculationType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.ukrtel.ddns.ff.ErrorCalculations.meanSquaredErrorCalculation;
-import static net.ukrtel.ddns.ff.activationfunctions.ActivationFunctionType.SIGMOID;
+import static net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunctionType.SIGMOID;
 
 /**
  * Simple example of neuron network
@@ -66,7 +67,8 @@ public class SimpleNeuralNetworkExample {
         double result = outputNeuron.getOutput();
 
         System.out.printf("Result: %.2f%n", result);
-        System.out.printf("Error: %.2f%%%n", meanSquaredErrorCalculation(new Pair<>((double) 1, result)) * 100);
+        System.out.printf("Error: %.2f%%%n", new ErrorCalculationFactory(ErrorCalculationType.MEAN_SQUARED)
+                .getInstance().calculate(new Pair<>((double) 1, result)) * 100);
 
         System.out.println();
         double delta = outputNeuron.backwardPropagation(0);

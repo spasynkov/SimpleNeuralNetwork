@@ -1,8 +1,8 @@
 package net.ukrtel.ddns.ff.neurons;
 
-import net.ukrtel.ddns.ff.activationfunctions.ActivationFunction;
 import net.ukrtel.ddns.ff.exceptions.NoSuitableNeuronFoundException;
 import net.ukrtel.ddns.ff.exceptions.SizesOfListsAreNotEqualsException;
+import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -5,6 +5,9 @@ import net.ukrtel.ddns.ff.neurons.AbstractNeuron;
 import net.ukrtel.ddns.ff.neurons.InputNeuron;
 import net.ukrtel.ddns.ff.neurons.Neuron;
 import net.ukrtel.ddns.ff.neurons.OutputNeuron;
+import net.ukrtel.ddns.ff.utils.NetworkStrategy;
+import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
+import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,9 @@ public class NeuralNetworkImpl implements NeuralNetwork {
      * Some kind of the error rate of our network with a certain weights
      */
     private double delta;
+
+    private ActivationFunction activationFunction;
+    private ErrorCalculation errorCalculation;
 
     @Override
     public NeuralNetworkBuilder getBuilder() {
@@ -147,6 +153,25 @@ public class NeuralNetworkImpl implements NeuralNetwork {
                     }
                 } else throw new RuntimeException("Can't make connections for output neurons. No output neurons found.");
             } else throw new RuntimeException("Can't make connections for input neurons. No input neurons found.");
+            return this;
+        }
+
+        @Override
+        public NeuralNetworkBuilder setStrategy(NetworkStrategy strategy) {
+            instance.activationFunction = strategy.getActivationFunction();
+            instance.errorCalculation = strategy.getErrorCalculation();
+            return this;
+        }
+
+        @Override
+        public NeuralNetworkBuilder setActivationFunction(ActivationFunction activationFunction) {
+            instance.activationFunction = activationFunction;
+            return this;
+        }
+
+        @Override
+        public NeuralNetworkBuilder setErrorCalculation(ErrorCalculation errorCalculation) {
+            instance.errorCalculation = errorCalculation;
             return this;
         }
 

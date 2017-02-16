@@ -1,6 +1,6 @@
 package net.ukrtel.ddns.ff.neurons;
 
-import net.ukrtel.ddns.ff.activationfunctions.ActivationFunction;
+import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
 
 public abstract class AbstractNeuron {
     /**
