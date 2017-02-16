@@ -1,6 +1,7 @@
 package net.ukrtel.ddns.ff.network;
 
 import net.ukrtel.ddns.ff.neurons.Neuron;
+import net.ukrtel.ddns.ff.neurons.NeuronType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,5 +26,13 @@ public class Layer {
 
     public void setNeurons(List<Neuron> neurons) {
         this.neurons = neurons;
+    }
+
+    public int getNumberOfNonBiasNeurons() {
+        int result = 0;
+        for (Neuron neuron : neurons) {
+            if (neuron != null && neuron.getType() != NeuronType.BIAS) result++;
+        }
+        return result;
     }
 }

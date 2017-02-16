@@ -92,9 +92,9 @@ class NeuronImpl implements Neuron {
     }
 
     @Override
-    public Neuron setAxon(double axon) {
+    public Neuron setAxon(double newValue) {
         if (this.isInputNeuron()) {
-            this.axon = axon;
+            this.axon = newValue;
         } else {
             throw new OperationWithNeuronNotSupportedException(
                     "Can't set axon for neuron '" + name + "' of type '" + type.name() + "'.");
@@ -120,6 +120,10 @@ class NeuronImpl implements Neuron {
 
     @Override
     public List<Neuron> getDendrites() {
+        if (type == NeuronType.INPUT || type == NeuronType.BIAS) {
+            throw new OperationWithNeuronNotSupportedException(
+                    "No dendrites available at neuron '" + name + "' of type '" + type.name() + "'.");
+        }
         return this.dendrites;
     }
 
@@ -130,6 +134,10 @@ class NeuronImpl implements Neuron {
 
     @Override
     public List<Neuron> getSynapses() {
+        if (type == NeuronType.OUTPUT) {
+            throw new OperationWithNeuronNotSupportedException(
+                    "No synapses available at neuron '" + name + "' of type '" + type.name() + "'.");
+        }
         return this.synapses;
     }
 
@@ -194,7 +202,7 @@ class NeuronImpl implements Neuron {
 
     @Override
     public double calculateSomaAndAxon(List<Double> weights, ActivationFunction activationFunction) {
-        this.calculateSoma(weights);
+        if (this.type != NeuronType.INPUT) this.calculateSoma(weights);
         return this.calculateAxon(activationFunction);
     }
 

@@ -41,8 +41,8 @@ public class SimpleNeuralNetworkExample {
         Neuron outputNeuron = factory.constructOutputNeuron().setName("OutputNeuron");
 
         NeuralNetwork network = new NeuralNetworkImpl().getBuilder()
-                .setActivationFunction(activationFunction)
-                .setErrorCalculation(error)
+                .setActivationFunction(activationFunction)  // setting activation function
+                .setErrorCalculation(error)                 // setting error calculation strategy
 
                 .addInputNeurons()
                     .addNeuron(input1)
@@ -58,7 +58,7 @@ public class SimpleNeuralNetworkExample {
                     .addNeuron(outputNeuron)
                     .layerReady()
 
-                .generateAllConnections()
+                .generateAllConnections()                   // generating all connections for fully connected network
 
                 .setWeights()
                     .setWeight(input1, neuron1, 0.45)       // weight between first input neuron and first hidden one
@@ -78,6 +78,9 @@ public class SimpleNeuralNetworkExample {
         System.out.println();
         System.out.printf("Result: %.2f%n", result);
         System.out.printf("Error: %.2f%%%n", errorRate * 100);
+
+        System.out.println();
+        System.out.println(network.showNetwork(true));
 
         /*System.out.println();
         double delta = outputNeuron.backwardPropagation(0);

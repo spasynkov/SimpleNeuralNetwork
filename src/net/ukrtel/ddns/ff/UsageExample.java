@@ -66,6 +66,7 @@ public class UsageExample {
                     .layerReady()
 
                 .generateAllConnections()               // generating fully connected neural network
+                .setMaxEpochNumber(15)
 
                 .build();
 
@@ -78,8 +79,8 @@ public class UsageExample {
             }
 
             @Override
-            public double getExpectedResult() {
-                return 0;
+            public double[] getExpectedResults() {
+                return new double[]{0};
             }
         };
 
@@ -90,8 +91,8 @@ public class UsageExample {
             }
 
             @Override
-            public double getExpectedResult() {
-                return 1;
+            public double[] getExpectedResults() {
+                return new double[]{1};
             }
         };
 
@@ -102,8 +103,8 @@ public class UsageExample {
             }
 
             @Override
-            public double getExpectedResult() {
-                return 1;
+            public double[] getExpectedResults() {
+                return new double[]{1};
             }
         };
 
@@ -114,8 +115,8 @@ public class UsageExample {
             }
 
             @Override
-            public double getExpectedResult() {
-                return 0;
+            public double[] getExpectedResults() {
+                return new double[]{0};
             }
         };
 
@@ -128,5 +129,11 @@ public class UsageExample {
 
         // starting training at prepared sets
         network.training(sets);
+
+        // trying to predict the result
+        network.prediction(1, 0);
+
+        System.out.println();
+        System.out.println(network.showNetwork(true));
     }
 }

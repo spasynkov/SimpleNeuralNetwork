@@ -1,5 +1,6 @@
 package net.ukrtel.ddns.ff.network;
 
+import javafx.util.Pair;
 import net.ukrtel.ddns.ff.exceptions.NotReadyForBuildException;
 import net.ukrtel.ddns.ff.neurons.Neuron;
 import net.ukrtel.ddns.ff.neurons.NeuronFactory;
@@ -19,11 +20,15 @@ public class NeuralNetworkImpl implements NeuralNetwork {
     private Layer outputNeurons;
 
     private List<Connection> connections;
+    private boolean isWeightsSet = false;
 
     /**
      * Some kind of the error rate of our network with a certain weights
      */
     private double delta;
+
+    private long iterations = 0;
+    private long maxEpochNumber = 0;
 
     private ActivationFunction activationFunction;
     private ErrorCalculation errorCalculation;
@@ -35,23 +40,79 @@ public class NeuralNetworkImpl implements NeuralNetwork {
 
     @Override
     public void training(List<TrainingSet> trainingSets) {
-        for (TrainingSet trainingSet : trainingSets) {
-            // set values for input neurons from training set
-            List<Neuron> neurons = inputNeurons.getNeurons();
-            for (int i = 0; i < neurons.size(); i++) {
-                neurons.get(i).setAxon(trainingSet.getInputData()[i]);
-            }
-            // generate random starting weights if they are not set yet
-            // set expected values for output neurons
+        // validating training sets data
+        if (trainingSets == null || trainingSets.isEmpty()) {
+            throw new RuntimeException("No data provided in training set (could be null or empty)");
+        }
+        for (int i = 0; i < trainingSets.size(); i++) {
+            TrainingSet set = trainingSets.get(i);
+            if (set == null) throw new RuntimeException(
+                    "Training data in set #" + i + " can't be applied. Reason: set = null");
+            else {
+                if (set.getInputData() == null
+                        || set.getInputData().length != inputNeurons.getNumberOfNonBiasNeurons()) {
+                    throw new RuntimeException("Training data in set #" + i
+                            + " can't be applied to the input neurons layer. Reason: "
+                            + (set.getInputData() == null ? "input data = null" : "input data length = "
+                            + set.getInputData().length + ", but we have "
+                            + inputNeurons.getNumberOfNonBiasNeurons() + " non bias neurons in input layer"));
+                }
 
-            // start training
+                if (set.getExpectedResults() == null
+                        || set.getExpectedResults().length != outputNeurons.getNumberOfNonBiasNeurons()) {
+                    throw new RuntimeException("Training data in set #" + i
+                            + " can't be applied to the output neurons layer. Reason: "
+                            + (set.getExpectedResults() == null ? "expected result = null" : "expected result length = "
+                            + set.getExpectedResults().length + ", but we have "
+                            + outputNeurons.getNumberOfNonBiasNeurons() + " non bias neurons in output layer"));
+                }
+            }
+        }
+
+        // starting training
+        for (int epoch = 0; epoch < maxEpochNumber; epoch++) {
+            for (TrainingSet trainingSet : trainingSets) {      // foreach set of data
+                // set values for input neurons from training set
+                List<Neuron> neurons = inputNeurons.getNeurons();
+                for (int i = 0; i < neurons.size(); i++) {
+                    neurons.get(i).setAxon(trainingSet.getInputData()[i]);
+                }
+
+                // generate random starting weights if they are not set yet
+                if (!isWeightsSet) {
+                    for (Connection connection : connections) {
+                        connection.setWeight(Math.random());
+                    }
+                }
+
+                // running training now
+                forwardPropagation();
+
+                // calculating delta using expected values from training set
+                Pair[] results = new Pair[outputNeurons.getNumberOfNonBiasNeurons()];
+                for (int i = 0; i < results.length; i++) {
+                    double ideal = trainingSet.getExpectedResults()[i];
+                    double actual = outputNeurons.getNeurons().get(i).getAxon();
+                    results[i] = new Pair<>(ideal, actual);
+                }
+
+                this.delta = errorCalculation.calculate(results);
+                iterations++;
+
+                // do backward propagation
+
+                System.out.println("Epoch = " + (epoch + 1) + "(" + maxEpochNumber + ")");
+                System.out.println("Iterations = " + iterations);
+                System.out.println("Delta = " + delta);
+                System.out.println();
+            }
         }
     }
 
-    @Override
-    public ResultSet prediction() {
-        // iterating over all layers and calculating soma and axon
-
+    /**
+     * Iterating over all layers and calculating soma and axon
+     */
+    private void forwardPropagation() {
         // iterating by each layer of hidden neurons first
         for (Layer layer : hiddenNeurons) {
             calculateSomaAndAxonForNeuronsLayer(layer);
@@ -59,7 +120,29 @@ public class NeuralNetworkImpl implements NeuralNetwork {
 
         // calculating for output layer
         calculateSomaAndAxonForNeuronsLayer(outputNeurons);
+    }
 
+    @Override
+    public ResultSet prediction(double... inputValues) {
+        // validating input data
+        if (inputValues == null) throw new RuntimeException("Input values are not set (null)");
+        if (inputValues.length == 0) {
+            System.out.println("WARNING! No input values vere passed. Old values will be used");
+        } else if (inputValues.length != inputNeurons.getNumberOfNonBiasNeurons()) {
+            throw new RuntimeException(String.format("Input values can't be applied to input neurons layer. " +
+                    "Input values length = %d but input neurons layer have only %d non bias neurons.",
+                    inputValues.length, inputNeurons.getNumberOfNonBiasNeurons()));
+        }
+
+        // setting input neurons
+        for (int i = 0; i < inputValues.length; i++) {
+            inputNeurons.getNeurons().get(i).setAxon(inputValues[i]);
+        }
+
+        // starting now
+        this.forwardPropagation();
+
+        // preparing results
         double[] result = new double[outputNeurons.getNeurons().size()];
         List<Neuron> neurons = outputNeurons.getNeurons();
         for (int i = 0; i < neurons.size(); i++) {
@@ -92,8 +175,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
                 }
             }
 
-            if (neuron.getType() != NeuronType.INPUT) neuron.calculateSoma(weights);
-            neuron.calculateAxon(activationFunction);
+            neuron.calculateSomaAndAxon(weights, activationFunction);
         }
     }
 
@@ -101,6 +183,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
     public boolean setWeight(Neuron left, Neuron right, double weight) {
         try {
             findConnectionByNeurons(left, right).setWeight(weight);
+            isWeightsSet = true;
             return true;
         } catch (Exception e) {
             // e.printStackTrace();
@@ -116,6 +199,59 @@ public class NeuralNetworkImpl implements NeuralNetwork {
         }
         throw new Exception("No suitable connection found for neurons: "
                 + left.getName() + ", " + right.getName());
+    }
+
+    @Override
+    public NeuralNetwork setMaxEpochNumber(long number) {
+        if (number < 0) throw new RuntimeException("Maximum epoch number can't be negative.");
+        this.maxEpochNumber = number;
+        return this;
+    }
+
+    @Override
+    public String showNetwork(boolean showWeights) {
+        StringBuilder builder = new StringBuilder();
+        // adding input layer
+        builder.append("Input layer:\t");
+        for (Neuron neuron : inputNeurons.getNeurons()) {
+            builder.append(neuron.getName()).append("(").append(neuron.getAxon()).append(")").append("\t");
+        }
+        builder.trimToSize();
+        builder.append("\n|\n");
+
+        if (hiddenNeurons != null && !hiddenNeurons.isEmpty()) {    // if we have hidden neurons layers
+            for (int i = 0; i < hiddenNeurons.size(); i++) {
+                Layer layer = hiddenNeurons.get(i);
+                builder.append("Hidden layer #").append(i).append(":\t");
+                for (Neuron neuron : layer.getNeurons()) {
+                    builder.append(neuron.getName()).append("\t");
+                }
+                builder.trimToSize();
+                builder.append("\n|\n");
+            }
+        }
+
+        // adding output layer
+        builder.append("Output layer:\t");
+        for (Neuron neuron : outputNeurons.getNeurons()) {
+            builder.append(neuron.getName()).append("\t");
+        }
+        builder.trimToSize();
+
+        if (showWeights) {  // if we need weights - show connections with weights
+            builder.append("\nConnections:");
+            for (Connection connection : connections) {
+                builder.append("\n")
+                        .append(connection.getLeftNeuron().getName())
+                        .append("\t->\t")
+                        .append(connection.getRightNeuron().getName())
+                        .append(" : ")
+                        .append(connection.getWeight());
+            }
+        }
+
+        builder.append("\nDelta = ").append(delta);
+        return builder.toString();
     }
 
     private double backwardPropagation() {
@@ -315,6 +451,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
 
                         // creating and saving connection between neurons and setting random weight
                         instance.connections.add(new Connection(leftNeuron, rightNeuron, Math.random()));
+                        instance.isWeightsSet = true;
                     }
                 }
             }
@@ -345,6 +482,12 @@ public class NeuralNetworkImpl implements NeuralNetwork {
         }
 
         @Override
+        public NeuralNetworkBuilder setMaxEpochNumber(long number) {
+            instance.setMaxEpochNumber(number);
+            return this;
+        }
+
+        @Override
         public NeuralNetwork build() {
             StringBuilder errorsList = new StringBuilder();
             if (instance.inputNeurons == null || instance.inputNeurons.getNeurons().isEmpty()) {
@@ -364,6 +507,11 @@ public class NeuralNetworkImpl implements NeuralNetwork {
                         errorsList.append("Layer ").append(i).append(" is empty.");
                     }
                 }
+            }
+
+            if (!instance.isWeightsSet) {
+                if (errorsList.length() > 0) errorsList.append("\n");
+                errorsList.append("No weights set.");
             }
 
             if (errorsList.length() > 0) throw new NotReadyForBuildException(errorsList.toString());
@@ -399,6 +547,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
 
             WeightBuilderImpl(NeuralNetworkImpl network) {
                 this.network = network;
+                this.network.isWeightsSet = true;
             }
 
             @Override
