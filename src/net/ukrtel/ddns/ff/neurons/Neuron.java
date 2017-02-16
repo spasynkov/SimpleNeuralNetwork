@@ -1,162 +1,34 @@
 package net.ukrtel.ddns.ff.neurons;
 
-import net.ukrtel.ddns.ff.exceptions.NoSuitableNeuronFoundException;
-import net.ukrtel.ddns.ff.exceptions.SizesOfListsAreNotEqualsException;
 import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-public class Neuron extends AbstractNeuron {
+public interface Neuron {
+    boolean isInputNeuron();
+    boolean isHiddenNeuron();
+    boolean isOutputNeuron();
+    boolean isBiasNeuron();
 
-    /**
-     * The list of neurons which are previous for this one (it's incoming connections)
-     */
-    private final List<AbstractNeuron> inputNeurons;
+    String getName();
 
-    /**
-     * The list of weights for each incoming connection for this neuron
-     */
-    private final List<Double> weights;
+    Neuron setName(String name);
 
-    /**
-     * The list of outgoing neurons
-     */
-    private final List<Neuron> outputNeurons;
+    List<Neuron> getDendrites();
 
-    public Neuron() {
-        inputNeurons = new ArrayList<>();
-        weights = new ArrayList<>();
-        outputNeurons = new ArrayList<>();
-    }
+    Neuron setDendrites(List<Neuron> dendrites);
 
-    /**
-     * Creates a neuron
-     *
-     * @param inputNeurons       the list of neurons which are previous for this one (it's incoming connections)
-     * @param weights            the list of weights for each incoming connection for this neuron
-     * @param activationFunction to be used for producing output
-     */
-    public Neuron(List<AbstractNeuron> inputNeurons, List<Double> weights, ActivationFunction activationFunction) {
+    double getAxon();
 
-        if (inputNeurons == null || weights == null || activationFunction == null)
-            throw new IllegalArgumentException("Argument values should not be null.");
-        if (inputNeurons.size() != weights.size())
-            throw new SizesOfListsAreNotEqualsException("The number of inputNeurons and weights should be equals.");
+    Neuron setAxon(double axon);
 
-        this.inputNeurons = inputNeurons;
-        this.outputNeurons = new LinkedList<>();
-        // adding this instance into incoming neuron's output lists
-        for (AbstractNeuron neuron : this.inputNeurons) {
-            if (neuron instanceof Neuron) {
-                List<Neuron> incomingOutputNeurons = ((Neuron) neuron).outputNeurons;
-                if (!incomingOutputNeurons.contains(this)) incomingOutputNeurons.add(this);
-            }
-        }
-        this.weights = weights;
-        this.setActivationFunction(activationFunction);
+    List<Neuron> getSynapses();
 
-        // calculating the value for this neuron
-        double value = calculateNeuronValue(inputNeurons, weights);
+    Neuron setSynapses(List<Neuron> synapses);
 
-        // calculating the output for this neuron by normalizing it's value
-        this.output = this.activationFunction.normalize(value);
+    NeuronType getType();
 
-        System.out.println();       // just some extra space
-    }
-
-    public List<AbstractNeuron> getInputNeurons() {
-        return inputNeurons;
-    }
-
-    public List<Double> getWeights() {
-        return weights;
-    }
-
-    public List<Neuron> getOutputNeurons() {
-        return outputNeurons;
-    }
-
-    /**
-     * Calculates backward propagation value
-     * @return backward propagation value
-     */
-    public double backwardPropagation(double delta) {
-        double result = 0;
-        System.out.printf("δ(%s) = ", getName() == null ? "neuron" : getName());
-
-        double differentialOfActivationFunction = activationFunction.differentialFunction(output);
-        System.out.print(" * (");
-
-        boolean isItFirstIteration = true;
-        for (Neuron neuron : outputNeurons) {
-            if (!isItFirstIteration) System.out.print(" + ");
-            try {
-                double weight = neuron.getWeightForNeuron(this);
-                result += weight * delta;
-                System.out.printf("%.2f * %.2f", weight, delta);
-                isItFirstIteration = false;
-            } catch (NoSuitableNeuronFoundException e) {
-                e.printStackTrace();
-            }
-        }
-
-        result *= differentialOfActivationFunction;
-        System.out.printf(") = %.2f%n", result);
-        return result;
-    }
-
-    /**
-     * Getting the weight value of the connection between this neuron and one of it's input neuron passed as a parameter
-     * @param neuron one of the input neurons that is asking for weight of connection
-     * @return the weight value of the connection between these neurons
-     * @throws NoSuitableNeuronFoundException throws if there is no connection found between these two neurons
-     */
-    private double getWeightForNeuron(Neuron neuron) throws NoSuitableNeuronFoundException {
-        for (int i = 0; i < inputNeurons.size(); i++) {
-            AbstractNeuron inputNeuron = inputNeurons.get(i);
-            if (inputNeuron instanceof Neuron && inputNeuron == neuron) {
-                return weights.get(i);
-            }
-        }
-
-        // look's like we scanned all input neurons and didn't find any matching connection...
-        // it's time to throw some exceptions!
-        throw new NoSuitableNeuronFoundException(String.format("Neuron '%s' is not found in input neurons of '%s'",
-                neuron.getName() == null ? neuron.toString() : neuron.getName(),
-                this.getName() == null ? this.toString() : this.getName()));
-    }
-
-    /**
-     * Calculates the current neuron value.
-     *
-     * @param inputNeurons the list of neurons which are previous for this one (it's incoming connections)
-     * @param weights      the list of weights for each incoming connection for this neuron
-     * @return the sum of each incoming neuron output value * it's (connection) weight
-     */
-    private double calculateNeuronValue(List<AbstractNeuron> inputNeurons, List<Double> weights) {
-        double result = 0;
-
-        System.out.print((getName() == null ? "hInput" : getName()) + " = ");
-
-        for (int i = 0; i < inputNeurons.size(); i++) {
-            double neuronValue = inputNeurons.get(i).getOutput();
-            double weight = weights.get(i);
-            result += neuronValue * weight;
-
-            if (i != 0) System.out.print(" + ");
-            System.out.printf("%.2f * %.2f", neuronValue, weight);
-        }
-
-        System.out.printf(" = %.3f%n", result);
-
-        return result;
-    }
-
-    @Override
-    public Neuron setName(String name) {
-        super.setName(name);
-        return this;
-    }
+    double calculateSoma(List<Double> weights);
+    double calculateAxon(ActivationFunction activationFunction);
+    double calculateSomaAndAxon(List<Double> weights, ActivationFunction activationFunction);
 }

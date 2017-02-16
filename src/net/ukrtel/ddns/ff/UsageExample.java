@@ -4,9 +4,8 @@ import net.ukrtel.ddns.ff.network.Layer;
 import net.ukrtel.ddns.ff.network.NeuralNetwork;
 import net.ukrtel.ddns.ff.network.NeuralNetworkImpl;
 import net.ukrtel.ddns.ff.network.TrainingSet;
-import net.ukrtel.ddns.ff.neurons.InputNeuron;
 import net.ukrtel.ddns.ff.neurons.Neuron;
-import net.ukrtel.ddns.ff.neurons.OutputNeuron;
+import net.ukrtel.ddns.ff.neurons.NeuronFactory;
 import net.ukrtel.ddns.ff.utils.NetworkStrategyImpl;
 
 import java.util.ArrayList;
@@ -19,20 +18,23 @@ import static net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculationType.M
  * Simple example of how to build and use this neural network
  */
 public class UsageExample {
-    private static final List<InputNeuron> INPUT_NEURONS = new ArrayList<>();
-    private static final List<OutputNeuron> OUTPUT_NEURONS = new ArrayList<>();
+    private static final List<Neuron> INPUT_NEURONS = new ArrayList<>();
+    private static final List<Neuron> OUTPUT_NEURONS = new ArrayList<>();
     private static final List<Neuron> HIDDEN_NEURONS = new ArrayList<>();
-    private static final Layer<Neuron> HIDDEN_NEURONS_LAYER = new Layer<>(HIDDEN_NEURONS);
+    private static final Layer HIDDEN_NEURONS_LAYER = new Layer(HIDDEN_NEURONS);
+
+    private static NeuronFactory factory = new NeuronFactory();
 
     static {
-        INPUT_NEURONS.add(new InputNeuron());
-        INPUT_NEURONS.add(new InputNeuron());
+        INPUT_NEURONS.add(factory.constructInputNeuron());
+        INPUT_NEURONS.add(factory.constructInputNeuron());
 
-        OUTPUT_NEURONS.add(new OutputNeuron());
-        OUTPUT_NEURONS.add(new OutputNeuron());
+        OUTPUT_NEURONS.add(factory.constructOutputNeuron());
+        OUTPUT_NEURONS.add(factory.constructOutputNeuron());
 
-        HIDDEN_NEURONS.add(new Neuron());
-        HIDDEN_NEURONS.add(new Neuron());
+        HIDDEN_NEURONS.add(factory.constructHiddenNeuron());
+        HIDDEN_NEURONS.add(factory.constructHiddenNeuron());
+        HIDDEN_NEURONS.add(factory.constructBiasNeuron());
 
     }
 
@@ -45,22 +47,22 @@ public class UsageExample {
                 //.addInputNeurons(15)
                 //.setInputNeurons(INPUT_NEURONS)   // will override previous input neurons
                 .addInputNeurons()                  // will override previous input neurons
-                    .addNeuron(new InputNeuron().setName("Input1"))
-                    .addNeuron(new InputNeuron().setName("Input2"))
+                    .addNeuron(factory.constructInputNeuron().setName("Input1"))
+                    .addNeuron(factory.constructInputNeuron().setName("Input2"))
                     .layerReady()
 
                 //.addHiddenNeuronsLayer(HIDDEN_NEURONS_LAYER)  // adding the whole layer by passing Layer object
                 //.addHiddenNeuronsLayer(HIDDEN_NEURONS)        // adding the whole layer by passing List of neurons
                 .addHiddenNeuronsLayer()                        // adding new layer to be formed from neurons directly
-                    .addNeuron(new Neuron().setName("Hidden1"))
-                    .addNeuron(new Neuron().setName("Hidden2"))
+                    .addNeuron(factory.constructHiddenNeuron().setName("Hidden1"))
+                    .addNeuron(factory.constructHiddenNeuron().setName("Hidden2"))
                     .layerReady()
 
                 //.addOutputNeurons(14)
                 //.setOutputNeurons(OUTPUT_NEURONS)     // will override previous output neurons
                 .addOutputNeurons()                     // will override previous output neurons
-                    .addNeuron(new OutputNeuron().setName("Output"))
-                    //.addNeuron(new OutputNeuron())
+                    .addNeuron(factory.constructOutputNeuron().setName("Output"))
+                    //.addNeuron(factory.constructOutputNeuron())
                     .layerReady()
 
                 .generateAllConnections()               // generating fully connected neural network

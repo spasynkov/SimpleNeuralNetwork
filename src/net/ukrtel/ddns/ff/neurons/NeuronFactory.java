@@ -1,5 +1,6 @@
-package net.ukrtel.ddns.ff.network;
+package net.ukrtel.ddns.ff.neurons;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NeuronFactory {
@@ -20,33 +21,33 @@ public class NeuronFactory {
         return constructNeuron(NeuronType.INPUT, null, 0, axon, synapses);
     }
     public Neuron constructInputNeuron(List<Neuron> synapses) {
-        return constructNeuron(NeuronType.INPUT, null, 0, 0, synapses);
+        return constructInputNeuron(0, synapses);
     }
     public Neuron constructInputNeuron(double axon) {
-        return constructNeuron(NeuronType.INPUT, null, 0, axon, null);
+        return constructInputNeuron(axon, new ArrayList<>());
     }
     public Neuron constructInputNeuron() {
-        return constructNeuron(NeuronType.INPUT, null, 0, 0, null);
+        return constructInputNeuron(0, new ArrayList<>());
     }
 
     public Neuron constructHiddenNeuron(List<Neuron> dendrites, List<Neuron> synapses) {
         return constructNeuron(NeuronType.HIDDEN, dendrites, 0, 0, synapses);
     }
     public Neuron constructHiddenNeuron() {
-        return constructNeuron(NeuronType.HIDDEN, null, 0, 0, null);
+        return constructHiddenNeuron(new ArrayList<>(), new ArrayList<>());
     }
 
     public Neuron constructOutputNeuron(List<Neuron> dendrites) {
         return constructNeuron(NeuronType.OUTPUT, dendrites, 0, 0, null);
     }
     public Neuron constructOutputNeuron() {
-        return constructNeuron(NeuronType.OUTPUT, null, 0, 0, null);
+        return constructOutputNeuron(new ArrayList<>());
     }
 
     public Neuron constructBiasNeuron(List<Neuron> synapses) {
         return constructNeuron(NeuronType.BIAS, null, 0, 0, synapses);
     }
     public Neuron constructBiasNeuron() {
-        return constructNeuron(NeuronType.BIAS, null, 0, 0, null);
+        return constructBiasNeuron(new ArrayList<>());
     }
 }

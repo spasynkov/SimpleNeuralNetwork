@@ -39,7 +39,7 @@ public class ActivationFunctionFactory {
                     @Override
                     public double normalize(double x) {
                         double result = 1.0 / (1 + Math.pow(Math.E, x * -1));
-                        System.out.printf("hOutput = sigmoid(%.2f) = %.2f%n", x, result);
+                        System.out.printf("sigmoid(%.2f) = %.2f%n", x, result);
                         return result;
                     }
 

@@ -1,9 +1,7 @@
 package net.ukrtel.ddns.ff.network;
 
 import javafx.util.Builder;
-import net.ukrtel.ddns.ff.neurons.InputNeuron;
 import net.ukrtel.ddns.ff.neurons.Neuron;
-import net.ukrtel.ddns.ff.neurons.OutputNeuron;
 import net.ukrtel.ddns.ff.utils.NetworkStrategy;
 import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
 import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculation;
@@ -14,16 +12,16 @@ import java.util.List;
  * Builder interface for neural network building
  */
 public interface NeuralNetworkBuilder extends Builder<NeuralNetwork> {
-    LayerBuilder<InputNeuron> addInputNeurons();
+    LayerBuilder addInputNeurons();
     NeuralNetworkBuilder addInputNeurons(int inputNeuronsQuantity);
-    NeuralNetworkBuilder setInputNeurons(List<InputNeuron> inputNeuronsList);
+    NeuralNetworkBuilder setInputNeurons(List<Neuron> inputNeuronsList);
 
-    LayerBuilder<OutputNeuron> addOutputNeurons();
+    LayerBuilder addOutputNeurons();
     NeuralNetworkBuilder addOutputNeurons(int outputNeuronsQuantity);
-    NeuralNetworkBuilder setOutputNeurons(List<OutputNeuron> outputNeuronsList);
+    NeuralNetworkBuilder setOutputNeurons(List<Neuron> outputNeuronsList);
 
-    LayerBuilder<Neuron> addHiddenNeuronsLayer();
-    NeuralNetworkBuilder addHiddenNeuronsLayer(Layer<Neuron> neuronsLayer);
+    LayerBuilder addHiddenNeuronsLayer();
+    NeuralNetworkBuilder addHiddenNeuronsLayer(Layer neuronsLayer);
     NeuralNetworkBuilder addHiddenNeuronsLayer(List<Neuron> neurons);
 
     NeuralNetworkBuilder generateAllConnections();
@@ -31,4 +29,6 @@ public interface NeuralNetworkBuilder extends Builder<NeuralNetwork> {
     NeuralNetworkBuilder setStrategy(NetworkStrategy strategy);
     NeuralNetworkBuilder setActivationFunction(ActivationFunction activationFunction);
     NeuralNetworkBuilder setErrorCalculation(ErrorCalculation errorCalculation);
+
+    WeightBuilder setWeights();
 }

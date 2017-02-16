@@ -1,4 +1,4 @@
-package net.ukrtel.ddns.ff.network;
+package net.ukrtel.ddns.ff.neurons;
 
 import net.ukrtel.ddns.ff.exceptions.OperationWithNeuronNotSupportedException;
 import net.ukrtel.ddns.ff.exceptions.SizesOfListsAreNotEqualsException;
@@ -114,6 +114,31 @@ class NeuronImpl implements Neuron {
     }
 
     @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public List<Neuron> getDendrites() {
+        return this.dendrites;
+    }
+
+    @Override
+    public double getAxon() {
+        return this.axon;
+    }
+
+    @Override
+    public List<Neuron> getSynapses() {
+        return this.synapses;
+    }
+
+    @Override
+    public NeuronType getType() {
+        return this.type;
+    }
+
+    @Override
     public double calculateSoma(List<Double> weights) {
         // few checks first
         if (dendrites == null || dendrites.isEmpty()) {
@@ -161,6 +186,7 @@ class NeuronImpl implements Neuron {
                     "Old soma value will be used now...");
         }
 
+        System.out.print(this.getName() + "(axon) = ");
         this.axon = activationFunction.normalize(this.soma);
         this.isSomaUpdated = false;
         return this.axon;
@@ -170,11 +196,6 @@ class NeuronImpl implements Neuron {
     public double calculateSomaAndAxon(List<Double> weights, ActivationFunction activationFunction) {
         this.calculateSoma(weights);
         return this.calculateAxon(activationFunction);
-    }
-
-    @Override
-    public double getAxon() {
-        return axon;
     }
 
     @Override

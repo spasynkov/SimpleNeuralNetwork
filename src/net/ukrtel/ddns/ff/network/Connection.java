@@ -1,5 +1,7 @@
 package net.ukrtel.ddns.ff.network;
 
+import net.ukrtel.ddns.ff.neurons.Neuron;
+
 /**
  * Class that represents the connection between two neurons
  */
