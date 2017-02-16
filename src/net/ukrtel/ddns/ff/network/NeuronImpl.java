@@ -176,4 +176,26 @@ class NeuronImpl implements Neuron {
     public double getAxon() {
         return axon;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        // since each neuron can't be uniquely identified by it's fields (two different neurons could have:
+        // * same default name,
+        // * same list of incoming connections and same for outgoing
+        // (for example, in fully connected network different neurons in same layer could have same lists)
+        // * and same soma and axon (as it calculated value so it could be for example 0 in both))
+        // - so let's compare references itself
+        return this == o;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + (dendrites != null ? dendrites.hashCode() : 0);
+        result = 31 * result + (soma != null ? soma.hashCode() : 0);
+        result = 31 * result + (axon != null ? axon.hashCode() : 0);
+        result = 31 * result + (synapses != null ? synapses.hashCode() : 0);
+        result = 31 * result + type.hashCode();
+        return result;
+    }
 }
