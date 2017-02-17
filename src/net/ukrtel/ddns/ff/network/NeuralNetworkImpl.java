@@ -1,6 +1,5 @@
 package net.ukrtel.ddns.ff.network;
 
-import javafx.util.Pair;
 import net.ukrtel.ddns.ff.exceptions.NotReadyForBuildException;
 import net.ukrtel.ddns.ff.neurons.Neuron;
 import net.ukrtel.ddns.ff.neurons.NeuronFactory;
@@ -25,7 +24,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
     /**
      * Some kind of the error rate of our network with a certain weights
      */
-    private double delta;
+    private double errorRate;
 
     private long iterations = 0;
     private long maxEpochNumber = 0;
@@ -88,22 +87,22 @@ public class NeuralNetworkImpl implements NeuralNetwork {
                 // running training now
                 forwardPropagation();
 
-                // calculating delta using expected values from training set
-                Pair[] results = new Pair[outputNeurons.getNumberOfNonBiasNeurons()];
+                // calculating errorRate using expected values from training set
+                TrainingResults[] results = new TrainingResults[outputNeurons.getNumberOfNonBiasNeurons()];
                 for (int i = 0; i < results.length; i++) {
-                    double ideal = trainingSet.getExpectedResults()[i];
+                    double expected = trainingSet.getExpectedResults()[i];
                     double actual = outputNeurons.getNeurons().get(i).getAxon();
-                    results[i] = new Pair<>(ideal, actual);
+                    results[i] = new TrainingResults(expected, actual);
                 }
 
-                this.delta = errorCalculation.calculate(results);
+                this.errorRate = errorCalculation.calculate(results);
                 iterations++;
 
                 // do backward propagation
 
                 System.out.println("Epoch = " + (epoch + 1) + "(" + maxEpochNumber + ")");
                 System.out.println("Iterations = " + iterations);
-                System.out.println("Delta = " + delta);
+                System.out.println("Error rate = " + errorRate);
                 System.out.println();
             }
         }
@@ -156,8 +155,8 @@ public class NeuralNetworkImpl implements NeuralNetwork {
             }
 
             @Override
-            public double getDelta() {
-                return delta;
+            public double getErrorRate() {
+                return errorRate;
             }
         };
     }
@@ -250,7 +249,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
             }
         }
 
-        builder.append("\nDelta = ").append(delta);
+        builder.append("\nError rate = ").append(errorRate);
         return builder.toString();
     }
 
@@ -265,7 +264,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
     /*private double backwardPropagationForOutputNeurons() {
         System.out.println("Ideal: " + expectedValue);
         System.out.printf("δ(%s) = (%.2f - %.2f) * ", getName() == null ? "output" : getName(), expectedValue, output);
-        double differentialOfActivationFunction = activationFunction.differentialFunction(output);
+        double differentialOfActivationFunction = activationFunction.derivativeOfTheFunction(output);
         double result = (expectedValue - output) * differentialOfActivationFunction;
         System.out.printf(" = %.2f%n", result);
         return result;
@@ -279,7 +278,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
         double result = 0;
         System.out.printf("δ(%s) = ", getName() == null ? "neuron" : getName());
 
-        double differentialOfActivationFunction = activationFunction.differentialFunction(output);
+        double differentialOfActivationFunction = activationFunction.derivativeOfTheFunction(output);
         System.out.print(" * (");
 
         boolean isItFirstIteration = true;
@@ -287,8 +286,8 @@ public class NeuralNetworkImpl implements NeuralNetwork {
             if (!isItFirstIteration) System.out.print(" + ");
             try {
                 double weight = neuron.getWeightForNeuron(this);
-                result += weight * delta;
-                System.out.printf("%.2f * %.2f", weight, delta);
+                result += weight * errorRate;
+                System.out.printf("%.2f * %.2f", weight, errorRate);
                 isItFirstIteration = false;
             } catch (NoSuitableNeuronFoundException e) {
                 e.printStackTrace();

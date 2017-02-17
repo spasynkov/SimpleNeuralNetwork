@@ -44,7 +44,7 @@ public class ActivationFunctionFactory {
                     }
 
                     @Override
-                    public double differentialFunction(double actualOutputData) {
+                    public double derivativeOfTheFunction(double actualOutputData) {
                         double result = (1 - actualOutputData) * actualOutputData;
                         /*System.out.printf("f'(IN) = fSigmoid = (1 - %.2f) * %.2f = %.2f%n",
                                 actualOutputData, actualOutputData, result);*/
@@ -64,7 +64,7 @@ public class ActivationFunctionFactory {
                     }
 
                     @Override
-                    public double differentialFunction(double actualOutputData) {
+                    public double derivativeOfTheFunction(double actualOutputData) {
                         return 1 - actualOutputData * actualOutputData;
                     }
                 };
@@ -78,7 +78,7 @@ public class ActivationFunctionFactory {
                     }
 
                     @Override
-                    public double differentialFunction(double actualOutputData) {
+                    public double derivativeOfTheFunction(double actualOutputData) {
                         throw new DifferentiationIsNotAllowedException("Differentiation is not allowed on linear function. " +
                                 "Try to use some other kind of function(sigmoid, hyperbolic tangent, etc).");
                     }

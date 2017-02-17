@@ -14,7 +14,7 @@ public interface ResultSet {
     /**
      * Gets the error rate of the network.
      *
-     * @return error rate value (delta)
+     * @return error rate value
      */
-    double getDelta();
+    double getErrorRate();
 }

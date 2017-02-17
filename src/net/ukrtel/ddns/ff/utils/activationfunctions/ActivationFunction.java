@@ -14,11 +14,11 @@ public interface ActivationFunction {
     double normalize(double x);
 
     /**
-     * Differential function.
+     * Derivative of the function.
      * If "normalize" is f(x) - this one is f'(x)
      *
      * @param actualOutputData the output data of some neuron
      * @return the result of differentiation of the output neuron's data
      */
-    double differentialFunction(double actualOutputData);
+    double derivativeOfTheFunction(double actualOutputData);
 }

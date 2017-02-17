@@ -1,9 +1,9 @@
 package net.ukrtel.ddns.ff;
 
-import javafx.util.Pair;
 import net.ukrtel.ddns.ff.network.NeuralNetwork;
 import net.ukrtel.ddns.ff.network.NeuralNetworkImpl;
 import net.ukrtel.ddns.ff.network.ResultSet;
+import net.ukrtel.ddns.ff.network.TrainingResults;
 import net.ukrtel.ddns.ff.neurons.Neuron;
 import net.ukrtel.ddns.ff.neurons.NeuronFactory;
 import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
@@ -73,7 +73,7 @@ public class SimpleNeuralNetworkExample {
 
         ResultSet resultSet = network.prediction();
         double result = resultSet.getPrediction()[0];
-        double errorRate = error.calculate(new Pair<>((double) expectedValue, result));
+        double errorRate = error.calculate(new TrainingResults((double) expectedValue, result));
 
         System.out.println();
         System.out.printf("Result: %.2f%n", result);
