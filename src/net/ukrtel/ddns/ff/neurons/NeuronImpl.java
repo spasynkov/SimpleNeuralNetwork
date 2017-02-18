@@ -18,6 +18,8 @@ class NeuronImpl implements Neuron {
 
     private boolean isSomaUpdated = false;
 
+    private double delta = 0;
+
     // input
     NeuronImpl(List<Neuron> synapses, double axon) {
         this.dendrites = null;
@@ -162,18 +164,18 @@ class NeuronImpl implements Neuron {
 
         // starting now
         double result = 0;
-        System.out.print(name + "(soma) = ");
+        //System.out.print(name + "(soma) = ");
 
         for (int i = 0; i < dendrites.size(); i++) {
             double neuronValue = dendrites.get(i).getAxon();
             double weight = weights.get(i);
             result += neuronValue * weight;
 
-            if (i != 0) System.out.print(" + ");
-            System.out.printf("%.2f * %.2f", neuronValue, weight);
+            //if (i != 0) System.out.print(" + ");
+            //System.out.printf("%.2f * %.2f", neuronValue, weight);
         }
 
-        System.out.printf(" = %.3f%n", result);
+        //System.out.printf(" = %.3f%n", result);
 
         this.soma = result;
         this.isSomaUpdated = true;
@@ -194,7 +196,7 @@ class NeuronImpl implements Neuron {
                     "Old soma value will be used now...");
         }
 
-        System.out.print(this.getName() + "(axon) = ");
+        //System.out.print(this.getName() + "(axon) = ");
         this.axon = activationFunction.normalize(this.soma);
         this.isSomaUpdated = false;
         return this.axon;
@@ -204,6 +206,16 @@ class NeuronImpl implements Neuron {
     public double calculateSomaAndAxon(List<Double> weights, ActivationFunction activationFunction) {
         if (this.type != NeuronType.INPUT) this.calculateSoma(weights);
         return this.calculateAxon(activationFunction);
+    }
+
+    @Override
+    public double getDelta() {
+        return delta;
+    }
+
+    @Override
+    public void setDelta(double delta) {
+        this.delta = delta;
     }
 
     @Override

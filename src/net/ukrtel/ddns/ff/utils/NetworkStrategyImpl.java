@@ -6,6 +6,9 @@ import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunctionType;
 import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculation;
 import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculationFactory;
 import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculationType;
+import net.ukrtel.ddns.ff.utils.learning.LearningStrategy;
+import net.ukrtel.ddns.ff.utils.learning.LearningStrategyFactory;
+import net.ukrtel.ddns.ff.utils.learning.LearningStrategyType;
 
 /**
  * Simple implementation of network strategy
@@ -13,10 +16,15 @@ import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculationType;
 public class NetworkStrategyImpl implements NetworkStrategy {
     private ActivationFunction activationFunction;
     private ErrorCalculation errorCalculation;
+    private LearningStrategy learningStrategy;
 
-    public NetworkStrategyImpl(ActivationFunctionType activationFunctionType, ErrorCalculationType errorCalculationType) {
+    public NetworkStrategyImpl(ActivationFunctionType activationFunctionType,
+                               ErrorCalculationType errorCalculationType,
+                               LearningStrategyType learningStrategyType) {
+
         this.activationFunction = new ActivationFunctionFactory(activationFunctionType).getActivationFunction();
         this.errorCalculation = new ErrorCalculationFactory(errorCalculationType).getInstance();
+        this.learningStrategy = new LearningStrategyFactory(learningStrategyType).getLearning();
     }
 
     public ActivationFunction getActivationFunction() {
@@ -25,5 +33,9 @@ public class NetworkStrategyImpl implements NetworkStrategy {
 
     public ErrorCalculation getErrorCalculation() {
         return errorCalculation;
+    }
+
+    public LearningStrategy getLearningStrategy() {
+        return learningStrategy;
     }
 }

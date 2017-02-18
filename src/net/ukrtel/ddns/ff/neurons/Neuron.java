@@ -139,4 +139,8 @@ public interface Neuron {
      * @return new axon value for this neuron
      */
     double calculateSomaAndAxon(List<Double> weights, ActivationFunction activationFunction);
+
+    double getDelta();
+
+    void setDelta(double delta);
 }

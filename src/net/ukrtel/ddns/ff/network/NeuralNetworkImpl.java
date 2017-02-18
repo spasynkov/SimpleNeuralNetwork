@@ -7,6 +7,7 @@ import net.ukrtel.ddns.ff.neurons.NeuronType;
 import net.ukrtel.ddns.ff.utils.NetworkStrategy;
 import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
 import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculation;
+import net.ukrtel.ddns.ff.utils.learning.LearningStrategy;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,6 +20,11 @@ public class NeuralNetworkImpl implements NeuralNetwork {
     private Layer outputNeurons;
 
     private List<Connection> connections;
+
+    private ActivationFunction activationFunction;
+    private ErrorCalculation errorCalculation;
+    private LearningStrategy learningStrategy;
+
     private boolean isWeightsSet = false;
 
     /**
@@ -28,9 +34,6 @@ public class NeuralNetworkImpl implements NeuralNetwork {
 
     private long iterations = 0;
     private long maxEpochNumber = 0;
-
-    private ActivationFunction activationFunction;
-    private ErrorCalculation errorCalculation;
 
     @Override
     public NeuralNetworkBuilder getBuilder() {
@@ -69,7 +72,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
         }
 
         // starting training
-        for (int epoch = 0; epoch < maxEpochNumber; epoch++) {
+        for (long epoch = 0; epoch < maxEpochNumber; epoch++) {
             for (TrainingSet trainingSet : trainingSets) {      // foreach set of data
                 // set values for input neurons from training set
                 List<Neuron> neurons = inputNeurons.getNeurons();
@@ -96,15 +99,26 @@ public class NeuralNetworkImpl implements NeuralNetwork {
                 }
 
                 this.errorRate = errorCalculation.calculate(results);
+
+                // doing backward propagation
+                learningStrategy.setExpectedValues(trainingSet.getExpectedResults());
+
+                List<Layer> combinedLayers = new ArrayList<>(1 + hiddenNeurons.size() + 1);
+                combinedLayers.add(inputNeurons);
+                combinedLayers.addAll(hiddenNeurons);
+                combinedLayers.add(outputNeurons);
+
+                // updating all weights in the network
+                learningStrategy.updateWeights(combinedLayers, connections, activationFunction);
+
                 iterations++;
 
-                // do backward propagation
-
-                System.out.println("Epoch = " + (epoch + 1) + "(" + maxEpochNumber + ")");
-                System.out.println("Iterations = " + iterations);
-                System.out.println("Error rate = " + errorRate);
-                System.out.println();
+                //System.out.println("Epoch = " + (epoch + 1) + "(" + maxEpochNumber + ")");
+                //System.out.println("Iterations = " + iterations);
+                //System.out.println("Error rate = " + errorRate);
+                //System.out.println();
             }
+            System.out.print(String.format("Epoch = %d(%d); Error rate = %.5f%n", epoch + 1, maxEpochNumber, errorRate));
         }
     }
 
@@ -233,7 +247,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
         // adding output layer
         builder.append("Output layer:\t");
         for (Neuron neuron : outputNeurons.getNeurons()) {
-            builder.append(neuron.getName()).append("\t");
+            builder.append(neuron.getName()).append("(").append(neuron.getAxon()).append(")").append("\t");
         }
         builder.trimToSize();
 
@@ -251,10 +265,6 @@ public class NeuralNetworkImpl implements NeuralNetwork {
 
         builder.append("\nError rate = ").append(errorRate);
         return builder.toString();
-    }
-
-    private double backwardPropagation() {
-        return 0;
     }
 
     /*
@@ -460,6 +470,7 @@ public class NeuralNetworkImpl implements NeuralNetwork {
         public NeuralNetworkBuilder setStrategy(NetworkStrategy strategy) {
             instance.activationFunction = strategy.getActivationFunction();
             instance.errorCalculation = strategy.getErrorCalculation();
+            instance.learningStrategy = strategy.getLearningStrategy();
             return this;
         }
 
@@ -472,6 +483,12 @@ public class NeuralNetworkImpl implements NeuralNetwork {
         @Override
         public NeuralNetworkBuilder setErrorCalculation(ErrorCalculation errorCalculation) {
             instance.errorCalculation = errorCalculation;
+            return this;
+        }
+
+        @Override
+        public NeuralNetworkBuilder setLearning(LearningStrategy learningStrategy) {
+            instance.learningStrategy = learningStrategy;
             return this;
         }
 

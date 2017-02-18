@@ -10,9 +10,12 @@ import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
 import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunctionFactory;
 import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculation;
 import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculationFactory;
+import net.ukrtel.ddns.ff.utils.learning.LearningStrategy;
+import net.ukrtel.ddns.ff.utils.learning.LearningStrategyFactory;
 
 import static net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunctionType.SIGMOID;
 import static net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculationType.MEAN_SQUARED;
+import static net.ukrtel.ddns.ff.utils.learning.LearningStrategyType.BACKWARD_PROPAGATION;
 
 /**
  * Simple example of neuron network
@@ -30,6 +33,7 @@ public class SimpleNeuralNetworkExample {
         // getting an instance of sigmoid activation functions from the factory
         ActivationFunction activationFunction = new ActivationFunctionFactory(SIGMOID).getActivationFunction();
         ErrorCalculation error = new ErrorCalculationFactory(MEAN_SQUARED).getInstance();
+        LearningStrategy learningStrategy = new LearningStrategyFactory(BACKWARD_PROPAGATION).getLearning();
 
         // creating input neurons
         Neuron input1 = factory.constructInputNeuron(firstValue).setName("InputNeuron1");       // first neuron with value 1
@@ -43,6 +47,7 @@ public class SimpleNeuralNetworkExample {
         NeuralNetwork network = new NeuralNetworkImpl().getBuilder()
                 .setActivationFunction(activationFunction)  // setting activation function
                 .setErrorCalculation(error)                 // setting error calculation strategy
+                .setLearning(learningStrategy)              // setting learning strategy
 
                 .addInputNeurons()
                     .addNeuron(input1)

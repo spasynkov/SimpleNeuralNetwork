@@ -10,6 +10,13 @@ public class Connection {
     private Neuron rightNeuron;
     private double weight;
 
+    /**
+     * The delta of the weight(Δw).
+     * Could be used in backward propagation process
+     * Shows the value at which the weight of connection should be changed during backward propagation process
+     */
+    private double weightDelta = 0;
+
     public Connection(Neuron leftNeuron, Neuron rightNeuron, double weight) {
         this.leftNeuron = leftNeuron;
         this.rightNeuron = rightNeuron;
@@ -35,6 +42,14 @@ public class Connection {
 
     public void setWeight(double weight) {
         this.weight = weight;
+    }
+
+    public double getWeightDelta() {
+        return weightDelta;
+    }
+
+    public void setWeightDelta(double weightDelta) {
+        this.weightDelta = weightDelta;
     }
 
     @Override

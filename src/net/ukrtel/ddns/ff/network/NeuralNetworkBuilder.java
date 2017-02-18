@@ -5,6 +5,7 @@ import net.ukrtel.ddns.ff.neurons.Neuron;
 import net.ukrtel.ddns.ff.utils.NetworkStrategy;
 import net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunction;
 import net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculation;
+import net.ukrtel.ddns.ff.utils.learning.LearningStrategy;
 
 import java.util.List;
 
@@ -117,6 +118,14 @@ public interface NeuralNetworkBuilder extends Builder<NeuralNetwork> {
      * @return this NeuralNetworkBuilder instance
      */
     NeuralNetworkBuilder setErrorCalculation(ErrorCalculation errorCalculation);
+
+    /**
+     * Sets the instance of LearningStrategy interface that would be used in learning process
+     *
+     * @param learningStrategy the instance of LearningStrategy interface
+     * @return this NeuralNetworkBuilder instance
+     */
+    NeuralNetworkBuilder setLearning(LearningStrategy learningStrategy);
 
     /**
      * Creates the WeightBuilder object that helps setting weights for connections between neurons in the network

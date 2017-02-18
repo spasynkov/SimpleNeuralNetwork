@@ -39,7 +39,7 @@ public class ActivationFunctionFactory {
                     @Override
                     public double normalize(double x) {
                         double result = 1.0 / (1 + Math.pow(Math.E, x * -1));
-                        System.out.printf("sigmoid(%.2f) = %.2f%n", x, result);
+                        //System.out.printf("sigmoid(%.2f) = %.2f%n", x, result);
                         return result;
                     }
 
@@ -48,8 +48,8 @@ public class ActivationFunctionFactory {
                         double result = (1 - actualOutputData) * actualOutputData;
                         /*System.out.printf("f'(IN) = fSigmoid = (1 - %.2f) * %.2f = %.2f%n",
                                 actualOutputData, actualOutputData, result);*/
-                        System.out.printf("((1 - %.2f) * %.2f)",
-                                actualOutputData, actualOutputData);
+                        //System.out.printf("((1 - %.2f) * %.2f)",
+                        //        actualOutputData, actualOutputData);
                         return result;
                     }
                 };

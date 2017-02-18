@@ -1,18 +1,18 @@
 package net.ukrtel.ddns.ff;
 
-import net.ukrtel.ddns.ff.network.Layer;
-import net.ukrtel.ddns.ff.network.NeuralNetwork;
-import net.ukrtel.ddns.ff.network.NeuralNetworkImpl;
-import net.ukrtel.ddns.ff.network.TrainingSet;
+import net.ukrtel.ddns.ff.network.*;
 import net.ukrtel.ddns.ff.neurons.Neuron;
 import net.ukrtel.ddns.ff.neurons.NeuronFactory;
+import net.ukrtel.ddns.ff.utils.NetworkStrategy;
 import net.ukrtel.ddns.ff.utils.NetworkStrategyImpl;
+import net.ukrtel.ddns.ff.utils.learning.BackwardPropagationLearningStrategyImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static net.ukrtel.ddns.ff.utils.activationfunctions.ActivationFunctionType.SIGMOID;
 import static net.ukrtel.ddns.ff.utils.errorscalculations.ErrorCalculationType.MEAN_SQUARED;
+import static net.ukrtel.ddns.ff.utils.learning.LearningStrategyType.BACKWARD_PROPAGATION;
 
 /**
  * Simple example of how to build and use this neural network
@@ -35,14 +35,16 @@ public class UsageExample {
         HIDDEN_NEURONS.add(factory.constructHiddenNeuron());
         HIDDEN_NEURONS.add(factory.constructHiddenNeuron());
         HIDDEN_NEURONS.add(factory.constructBiasNeuron());
-
     }
 
     public static void main(String[] args) {
+        NetworkStrategy strategy = new NetworkStrategyImpl(SIGMOID, MEAN_SQUARED, BACKWARD_PROPAGATION);
+
         NeuralNetwork network = new NeuralNetworkImpl().getBuilder()
                 //.setActivationFunction(new ActivationFunctionFactory(LINEAR).getActivationFunction())
                 //.setErrorCalculation(new ErrorCalculationFactory(ARCTAN).getInstance())
-                .setStrategy(new NetworkStrategyImpl(SIGMOID, MEAN_SQUARED))
+                //.setLearning(new LearningStrategyFactory(BACKWARD_PROPAGATION).getLearningStrategy())
+                .setStrategy(strategy)
 
                 //.addInputNeurons(15)
                 //.setInputNeurons(INPUT_NEURONS)   // will override previous input neurons
@@ -66,7 +68,7 @@ public class UsageExample {
                     .layerReady()
 
                 .generateAllConnections()               // generating fully connected neural network
-                .setMaxEpochNumber(15)
+                .setMaxEpochNumber(Integer.MAX_VALUE)
 
                 .build();
 
@@ -127,13 +129,19 @@ public class UsageExample {
         sets.add(trainingSet3);
         sets.add(trainingSet4);
 
+        // setting epsilon and alpha values for
+        ((BackwardPropagationLearningStrategyImpl) strategy.getLearningStrategy()).setEpsilon(0.7);
+        ((BackwardPropagationLearningStrategyImpl) strategy.getLearningStrategy()).setAlpha(0.3);
+
         // starting training at prepared sets
         network.training(sets);
 
         // trying to predict the result
-        network.prediction(1, 0);
+        ResultSet result = network.prediction(1, 0);
+        System.out.println(result.getPrediction()[0]);
+        System.out.println(result.getErrorRate());
 
         System.out.println();
-        System.out.println(network.showNetwork(true));
+        //System.out.println(network.showNetwork(true));
     }
 }
