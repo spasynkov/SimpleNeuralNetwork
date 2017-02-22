@@ -26,7 +26,8 @@ public class SimpleNeuralNetworkExample {
         // trying XOR: 1 ^ 0 = 1
         byte firstValue = 1;
         byte secondValue = 0;
-        byte expectedValue = 1;
+        byte expectedValue = (byte) (firstValue ^ secondValue);
+        System.out.println(expectedValue);
 
         NeuronFactory factory = new NeuronFactory();
 

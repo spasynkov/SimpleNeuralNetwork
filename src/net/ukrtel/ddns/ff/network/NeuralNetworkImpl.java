@@ -79,8 +79,10 @@ public class NeuralNetworkImpl implements NeuralNetwork {
             for (TrainingSet trainingSet : trainingSets) {      // foreach set of data
                 // setting values for input neurons from training set
                 List<Neuron> neurons = inputNeurons.getNeurons();
+                Neuron neuron;
                 for (int i = 0; i < neurons.size(); i++) {
-                    neurons.get(i).setAxon(trainingSet.getInputData()[i]);
+                    neuron = neurons.get(i);
+                    if (neuron.getType() != NeuronType.BIAS) neuron.setAxon(trainingSet.getInputData()[i]);
                 }
 
                 // generating random starting weights if they are not set yet
@@ -179,18 +181,20 @@ public class NeuralNetworkImpl implements NeuralNetwork {
 
     private void calculateSomaAndAxonForNeuronsLayer(Layer layer) {
         for (Neuron neuron : layer.getNeurons()) {
-            // gathering weights for this neuron
-            List<Double> weights = new LinkedList<>();
-            for (Neuron inputNeuron : neuron.getDendrites()) {
-                try {
-                    weights.add(findConnectionByNeurons(inputNeuron, neuron).getWeight());
-                } catch (Exception e) {
-                    // e.printStackTrace(); // seems like there is no connection between this pair of neurons
-                    // and if there is no connection - so and no weight for it, so lets continue
+            if (neuron.getType() == NeuronType.HIDDEN || neuron.getType() == NeuronType.OUTPUT) {
+                // gathering weights for this neuron
+                List<Double> weights = new LinkedList<>();
+                for (Neuron inputNeuron : neuron.getDendrites()) {
+                    try {
+                        weights.add(findConnectionByNeurons(inputNeuron, neuron).getWeight());
+                    } catch (Exception e) {
+                        // e.printStackTrace(); // seems like there is no connection between this pair of neurons
+                        // and if there is no connection - so and no weight for it, so lets continue
+                    }
                 }
-            }
 
-            neuron.calculateSomaAndAxon(weights, activationFunction);
+                neuron.calculateSomaAndAxon(weights, activationFunction);
+            }
         }
     }
 
