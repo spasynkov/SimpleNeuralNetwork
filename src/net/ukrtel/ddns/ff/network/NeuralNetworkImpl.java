@@ -73,14 +73,17 @@ public class NeuralNetworkImpl implements NeuralNetwork {
 
         // starting training
         for (long epoch = 0; epoch < maxEpochNumber; epoch++) {
+            // preparing the array of results (expected value of output neuron and actual value) for error calculation
+            TrainingResults[] results = new TrainingResults[outputNeurons.getNumberOfNonBiasNeurons()];
+
             for (TrainingSet trainingSet : trainingSets) {      // foreach set of data
-                // set values for input neurons from training set
+                // setting values for input neurons from training set
                 List<Neuron> neurons = inputNeurons.getNeurons();
                 for (int i = 0; i < neurons.size(); i++) {
                     neurons.get(i).setAxon(trainingSet.getInputData()[i]);
                 }
 
-                // generate random starting weights if they are not set yet
+                // generating random starting weights if they are not set yet
                 if (!isWeightsSet) {
                     for (Connection connection : connections) {
                         connection.setWeight(Math.random());
@@ -91,18 +94,16 @@ public class NeuralNetworkImpl implements NeuralNetwork {
                 forwardPropagation();
 
                 // calculating errorRate using expected values from training set
-                TrainingResults[] results = new TrainingResults[outputNeurons.getNumberOfNonBiasNeurons()];
                 for (int i = 0; i < results.length; i++) {
                     double expected = trainingSet.getExpectedResults()[i];
                     double actual = outputNeurons.getNeurons().get(i).getAxon();
                     results[i] = new TrainingResults(expected, actual);
                 }
 
-                this.errorRate = errorCalculation.calculate(results);
-
-                // doing backward propagation
+                // passing values for backward propagation process
                 learningStrategy.setExpectedValues(trainingSet.getExpectedResults());
 
+                // creating total list of all neurons
                 List<Layer> combinedLayers = new ArrayList<>(1 + hiddenNeurons.size() + 1);
                 combinedLayers.add(inputNeurons);
                 combinedLayers.addAll(hiddenNeurons);
@@ -118,7 +119,8 @@ public class NeuralNetworkImpl implements NeuralNetwork {
                 //System.out.println("Error rate = " + errorRate);
                 //System.out.println();
             }
-            System.out.print(String.format("Epoch = %d(%d); Error rate = %.5f%n", epoch + 1, maxEpochNumber, errorRate));
+            this.errorRate = errorCalculation.calculate(results);
+            //System.out.print(String.format("Epoch = %d(%d); Error rate = %.5f%n", epoch + 1, maxEpochNumber, errorRate));
         }
     }
 
